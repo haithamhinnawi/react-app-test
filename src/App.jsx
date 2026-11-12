@@ -3,6 +3,19 @@ import './App.css'
 
 const API_URL = import.meta.env.VITE_API_URL
 
+// Supports both JSONPlaceholder (array of users) and DummyJSON ({ users: [...] })
+function normalizeUsers(data) {
+  const list = Array.isArray(data) ? data : data.users ?? []
+  return list.map((u) => ({
+    id: u.id,
+    name: u.name ?? `${u.firstName} ${u.lastName}`,
+    username: u.username,
+    email: u.email,
+    company: u.company?.name ?? '',
+    city: u.address?.city ?? '',
+  }))
+}
+
 function App() {
   const [users, setUsers] = useState([])
   const [query, setQuery] = useState('')
@@ -23,11 +36,13 @@ function App() {
         if (!res.ok) throw new Error(`Request failed: ${res.status}`)
         return res.json()
       })
-      .then(setUsers)
+      .then((data) => setUsers(normalizeUsers(data)))
       .catch((err) => {
         if (err.name !== 'AbortError') setError(err.message)
       })
-      .finally(() => setLoading(false))
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false)
+      })
 
     return () => controller.abort()
   }, [])
@@ -63,8 +78,8 @@ function App() {
               <p>
                 <a href={`mailto:${user.email}`}>{user.email}</a>
               </p>
-              <p>{user.company.name}</p>
-              <p className="muted">{user.address.city}</p>
+              <p>{user.company}</p>
+              <p className="muted">{user.city}</p>
             </li>
           ))}
           {filtered.length === 0 && <p>No users match “{query}”.</p>}
