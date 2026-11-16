@@ -1,1 +1,1 @@
-export const title = 'This is static data v2'
+export const title = 'This is static data v33'
