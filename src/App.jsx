@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import {title} from '../static-data'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -53,7 +54,8 @@ function App() {
 
   return (
     <main className="container">
-      <h1>Test for deployment</h1>
+      <h2>test</h2>
+      <h1>{title} t</h1>
       <h1>User Directory</h1>
       <p className="source">
         Data from <code>{API_URL}</code>
